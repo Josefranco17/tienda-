@@ -1,0 +1,28 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <section class="formulario">
+        <h2>Crear cuenta</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="campo">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="campo">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+            </div>
+            <div class="campo">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+            <div class="campo">
+                {{ form.password_confirm.label_tag }}
+                {{ form.password_confirm }}
+            </div>
+            <button type="submit" class="boton">Registrar</button>
+        </form>
+        <p>¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
+    </section>
+{% endblock %}

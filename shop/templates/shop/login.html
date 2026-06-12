@@ -1,0 +1,20 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <section class="formulario">
+        <h2>Iniciar sesión</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="campo">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="campo">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+            <button type="submit" class="boton">Entrar</button>
+        </form>
+        <p>¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+    </section>
+{% endblock %}

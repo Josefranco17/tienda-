@@ -1,0 +1,114 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h2>Elige la camiseta de tu selección favorita</h2>
+                <p>Mira los modelos de cada país y agrégalos a tu carrito.</p>
+                <form method="get" class="search-form">
+                    <input type="search" name="q" placeholder="Buscar selección o país" value="{{ q }}" autocomplete="off">
+                    <button type="submit">Buscar</button>
+                </form>
+            </div>
+            <div class="hero-image">
+                <img src="https://www.shutterstock.com/image-photo/logo-golden-shoe-soccer-inside-260nw-2677720487.jpg" alt="Camisetas de fútbol">
+            </div>
+        </div>
+    </section>
+
+    {% if user.is_authenticated %}
+        <section class="cart-section">
+            <h2>Tu carrito</h2>
+            {% if cart_items %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                            <tr>
+                                <td>{{ item.seleccion.nombre }}</td>
+                                <td>{{ item.cantidad }}</td>
+                                <td>${{ item.seleccion.precio }}</td>
+                                <td>${{ item.subtotal }}</td>
+                                <td><a class="eliminar" href="{% url 'eliminar_item' item.id %}">Eliminar</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="total">Total: ${{ cart_total }}</div>
+            {% else %}
+                <p>No hay productos en el carrito aún.</p>
+            {% endif %}
+        </section>
+    {% else %}
+        <section class="forms-grid">
+            <div class="form-box">
+                <h2>Iniciar sesión</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="login">
+                    {{ login_form.non_field_errors }}
+                    <div class="campo">
+                        {{ login_form.username.label_tag }}
+                        {{ login_form.username }}
+                    </div>
+                    <div class="campo">
+                        {{ login_form.password.label_tag }}
+                        {{ login_form.password }}
+                    </div>
+                    <button type="submit" class="boton">Entrar</button>
+                </form>
+            </div>
+            <div class="form-box">
+                <h2>Crear cuenta</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="register">
+                    {{ register_form.non_field_errors }}
+                    <div class="campo">
+                        {{ register_form.username.label_tag }}
+                        {{ register_form.username }}
+                    </div>
+                    <div class="campo">
+                        {{ register_form.email.label_tag }}
+                        {{ register_form.email }}
+                    </div>
+                    <div class="campo">
+                        {{ register_form.password.label_tag }}
+                        {{ register_form.password }}
+                    </div>
+                    <div class="campo">
+                        {{ register_form.password_confirm.label_tag }}
+                        {{ register_form.password_confirm }}
+                    </div>
+                    <button type="submit" class="boton">Registrar</button>
+                </form>
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="productos">
+        {% for seleccion in selecciones %}
+            <article class="producto">
+                <img src="{{ seleccion.imagen }}" alt="{{ seleccion.nombre }}">
+                <h3>{{ seleccion.nombre }}</h3>
+                <p>{{ seleccion.descripcion }}</p>
+                <div class="precio">${{ seleccion.precio }}</div>
+                {% if user.is_authenticated %}
+                    <a class="boton" href="{% url 'agregar_carrito' seleccion.id %}">Agregar</a>
+                {% else %}
+                    <span class="boton disabled">Inicia sesión para comprar</span>
+                {% endif %}
+            </article>
+        {% empty %}
+            <p>No hay camisetas disponibles todavía.</p>
+        {% endfor %}
+    </section>
+{% endblock %}
