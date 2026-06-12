@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.KEY }}
           source: "."
           target: "/home/${{ secrets.USER }}/ot/"
-          rm: false
+          rm: true
 
       - name: Execute remote commands via SSH
         uses: appleboy/ssh-action@v1.0.3
