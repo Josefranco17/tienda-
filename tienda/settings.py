@@ -3,12 +3,24 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Oracle Autonomous Database wallet directory
-os.environ.setdefault('TNS_ADMIN', str(BASE_DIR / 'Wallet_tienda'))
+# Load .env file when present
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    with env_path.open() as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            key, sep, value = line.partition('=')
+            if sep and key and key not in os.environ:
+                os.environ[key] = value
 
-SECRET_KEY = 'django-insecure-change-me'
-DEBUG = True
-ALLOWED_HOSTS = []
+# Oracle Autonomous Database wallet directory
+os.environ.setdefault('TNS_ADMIN', os.environ.get('TNS_ADMIN', str(BASE_DIR / 'Wallet_tienda')))
+
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-me')
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('1', 'true', 'yes')
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get('ALLOWED_HOSTS', '').split(',') if host.strip()]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -53,9 +65,9 @@ WSGI_APPLICATION = 'tienda.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'tienda_tp',
-        'USER': 'ADMIN',
-        'PASSWORD': 'Inacap.2026$',
+        'NAME': os.environ.get('DB_NAME', 'tienda_tp'),
+        'USER': os.environ.get('DB_USER', 'ADMIN'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'Inacap.2026$'),
     }
 }
 
@@ -81,7 +93,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'shop' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
